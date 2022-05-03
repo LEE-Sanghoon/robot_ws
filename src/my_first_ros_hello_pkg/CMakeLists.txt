@@ -20,11 +20,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
+find_package(PahoMqttCpp REQUIRED)
+
 # Build
 add_executable(hello_publisher src/hello_publisher.cpp)
 ament_target_dependencies(hello_publisher rclcpp std_msgs)
 
 add_executable(hello_subscriber src/hello_subscriber.cpp)
+target_link_libraries(hello_subscriber paho-mqtt3c paho-mqttpp3)
 ament_target_dependencies(hello_subscriber rclcpp std_msgs)
 
 
