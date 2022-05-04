@@ -8,19 +8,19 @@
 
 using std::placeholders::_1;
 
+const std::string MQTT_ADDRESS_     {"tcp://localhost:1883"};
+const std::string MQTT_CLIENT_ID_   {""};
+const std::string MQTT_TOPIC_       {"ros/hello"};
+const int MQTT_QOS_ = 1;
+mqtt::client * pMqttClient_ = NULL;
+
 class HelloSubscriber: public rclcpp::Node
 {
 public:
   HelloSubscriber()
   : Node("Hello_subscriber")
   {
-    pMqttClient_ = new mqtt::client(MQTT_ADDRESS_, MQTT_CLIENT_ID_);
 
-    mqtt::connect_options connOpts;
-    connOpts.set_keep_alive_interval(20);
-    connOpts.set_clean_session(true);
-
-    pMqttClient_->connect(connOpts);
 
     auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(10));
 
@@ -50,16 +50,20 @@ private:
   }
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr hello_subscriber_;
 
-  const std::string MQTT_ADDRESS_ {"tcp://localhost:1883"};
-  const std::string MQTT_CLIENT_ID_ {"my_first_ros_hello"};
-  const std::string MQTT_TOPIC_ {"ros/hello"};
-  const int MQTT_QOS_ = 1;
-  mqtt::client * pMqttClient_ = NULL;
+
 };
 
 int main(int argc, char* argv[])
 {
   rclcpp::init(argc, argv);
+
+  pMqttClient_ = new mqtt::client(MQTT_ADDRESS_, MQTT_CLIENT_ID_);
+
+  mqtt::connect_options connOpts;
+  connOpts.set_keep_alive_interval(20);
+  connOpts.set_clean_session(true);
+
+  pMqttClient_->connect(connOpts);
 
   auto node = std::make_shared<HelloSubscriber>();
   rclcpp::spin(node);
